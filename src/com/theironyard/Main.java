@@ -19,7 +19,7 @@ public class Main extends Application {
 
     static final int WIDTH = 800;
     static final int HEIGHT = 600;
-    static final int ANT_COUNT = 100;
+    static final int ANT_COUNT = 250;
 
     ArrayList<Ant> ants;
     long lastTimestamp = 0;
@@ -37,29 +37,42 @@ public class Main extends Application {
     void drawAnts(GraphicsContext context){
         context.clearRect(0, 0, WIDTH, HEIGHT);
         for (Ant ant : ants){
-            context.setFill(Color.BLACK);
-            context.fillOval(ant.x, ant.y, 5, 9);
+                context.setFill(ant.antColor);
+                context.fillOval(ant.x, ant.y, 10, 10);
         }
     }
+    Ant aggravateAnts(Ant ant) {
+        ArrayList<Ant> closeAnts = new ArrayList<>();
+
+        for (Ant otherAnt : ants) {
+            if (Math.abs(ant.x - otherAnt.x) <= 20 && Math.abs(ant.y - otherAnt.y) <= 20) {
+                closeAnts.add(ant);
+            }
+        }
+        if (closeAnts.size() > 1) {
+           ant.antColor = Color.RED;
+        } else {
+            ant.antColor = Color.BLACK;
+        }
+        return ant;
+    }
+
+
 
     double randomStep (){
         return Math.random() * 2 -1 ;
     }
 
     Ant moveAnt (Ant ant) {
-        try {
-            Thread.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ant.x += randomStep();
-        ant.y += randomStep();
+        ant.x += randomStep()*2;
+        ant.y += randomStep()*2;
         return ant;
     }
 
     void updateAnts() {
         ants = ants.parallelStream()
                 .map(this::moveAnt)
+                .map(this::aggravateAnts)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
