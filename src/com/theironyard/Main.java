@@ -42,7 +42,9 @@ public class Main extends Application {
         }
     }
     Ant aggravateAnts(Ant ant) {
-        ArrayList<Ant> closeAnts = new ArrayList<>();
+
+        //oldSchool
+       /* ArrayList<Ant> closeAnts = new ArrayList<>();
 
         for (Ant otherAnt : ants) {
             if (Math.abs(ant.x - otherAnt.x) <= 20 && Math.abs(ant.y - otherAnt.y) <= 20) {
@@ -51,6 +53,21 @@ public class Main extends Application {
         }
         if (closeAnts.size() > 1) {
            ant.antColor = Color.RED;
+        } else {
+            ant.antColor = Color.BLACK;
+        }
+        return ant; */
+
+        //newSchool
+        ArrayList<Ant> aggroAnts = ants.stream()
+                .filter(anthony -> {
+                    return Math.abs(ant.x - anthony.x) <= 10
+                            &&
+                            Math.abs (ant.y - anthony.y) <=10;
+                })
+                .collect(Collectors.toCollection(ArrayList<Ant>::new));
+        if (aggroAnts.size() > 1){
+            ant.antColor = Color.RED;
         } else {
             ant.antColor = Color.BLACK;
         }
