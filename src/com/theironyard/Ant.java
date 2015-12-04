@@ -9,6 +9,9 @@ import javafx.scene.paint.Color;
 public class Ant {
     double x;
     double y;
+    double size = 10;
+    double speed = 1;
+    //double height = 10;
     Color antColor = Color.BLACK;
     //boolean isFight = false;
 

@@ -19,7 +19,7 @@ public class Main extends Application {
 
     static final int WIDTH = 800;
     static final int HEIGHT = 600;
-    static final int ANT_COUNT = 250;
+    static final int ANT_COUNT = 500;
 
     ArrayList<Ant> ants;
     long lastTimestamp = 0;
@@ -38,9 +38,10 @@ public class Main extends Application {
         context.clearRect(0, 0, WIDTH, HEIGHT);
         for (Ant ant : ants){
                 context.setFill(ant.antColor);
-                context.fillOval(ant.x, ant.y, 10, 10);
+                context.fillOval(ant.x, ant.y, ant.size, ant.size);
         }
     }
+
     Ant aggravateAnts(Ant ant) {
 
         //oldSchool
@@ -61,28 +62,60 @@ public class Main extends Application {
         //newSchool
         ArrayList<Ant> aggroAnts = ants.stream()
                 .filter(anthony -> {
-                    return Math.abs(ant.x - anthony.x) <= 10
+                    return Math.abs(ant.x - anthony.x) <= 20
                             &&
-                            Math.abs (ant.y - anthony.y) <=10;
+                            Math.abs (ant.y - anthony.y) <= 20;
                 })
                 .collect(Collectors.toCollection(ArrayList<Ant>::new));
         if (aggroAnts.size() > 1){
-            ant.antColor = Color.RED;
+            ant.antColor = Color.GREEN;
         } else {
-            ant.antColor = Color.BLACK;
+            ant.antColor = Color.RED;
         }
         return ant;
     }
-
-
+    Ant hulkAnt (Ant ant) {
+        ArrayList<Ant> hulkAnts = ants.stream()
+                .filter(hulk -> {
+                    return Math.abs(ant.x - hulk.x) <= 20
+                            &&
+                            Math.abs(ant.y - hulk.y) <= 20;
+                })
+                .collect(Collectors.toCollection(ArrayList<Ant>::new));
+        if (hulkAnts.size() > 1) {
+            ant.size = 20;
+          //  ant.height = 20;
+        } else {
+            ant.size = 10;
+            //ant.height = 10;
+        }
+    return ant;
+    }
+    Ant speedAnt (Ant ant) {
+        ArrayList<Ant> speedAnts = ants.stream()
+                .filter(hulk -> {
+                    return Math.abs(ant.x - hulk.x) <= 20
+                            &&
+                            Math.abs(ant.y - hulk.y) <= 20;
+                })
+                .collect(Collectors.toCollection(ArrayList<Ant>::new));
+        if (speedAnts.size() > 1) {
+            ant.speed = 2;
+            //  ant.height = 20;
+        } else {
+            ant.speed = 0.5;
+            //ant.height = 10;
+        }
+        return ant;
+    }
 
     double randomStep (){
         return Math.random() * 2 -1 ;
     }
 
     Ant moveAnt (Ant ant) {
-        ant.x += randomStep()*2;
-        ant.y += randomStep()*2;
+        ant.x += ant.speed * (randomStep()*2);
+        ant.y += ant.speed * randomStep()*2;
         return ant;
     }
 
@@ -90,6 +123,9 @@ public class Main extends Application {
         ants = ants.parallelStream()
                 .map(this::moveAnt)
                 .map(this::aggravateAnts)
+                .map(this::hulkAnt)
+                .map(this::speedAnt)
+
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
